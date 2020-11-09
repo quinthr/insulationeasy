@@ -5,6 +5,7 @@ import 'package:uuid/uuid.dart';
 import './models/InstallationFormEntry.dart';
 import './models/FormImages.dart';
 import './models/Hazards.dart';
+import './models/SignatureForm.dart';
 import './widget/checklist_form.dart';
 
 
@@ -29,10 +30,8 @@ Future<String> generateFormId() async {
         'comments': null,
         'workSiteEvaluator': null,
         'workSiteEvaluatedDate': null,
-        'workSiteEvaluatorSignature': null,
         'builderConfirmation': null,
         'builderConfirmationDate': null,
-        'builderConfirmationSignature': null,
         'assessorName': null,
         'status': 'On Progress',
       });
@@ -58,6 +57,18 @@ Future<String> generateFormId() async {
           'formId': checkId
         });
       }
+      SignatureFormDB.insert('installation_form_signatures', {
+          'signatureName': checkId+'-WorkEvaluatorSignature',
+          'signaturePoints': null,
+          'signatureImage': null,
+          'formId': checkId
+      });
+      SignatureFormDB.insert('installation_form_signatures', {
+        'signatureName': checkId+'-BuilderSignature',
+        'signaturePoints': null,
+        'signatureImage': null,
+        'formId': checkId
+      });
       return checkId;
     });
   }
@@ -79,10 +90,8 @@ Future<dynamic> fetchAndSetFormData() async{
         comments: item['comments'],
         workSiteEvaluator: item['workSiteEvaluator'],
         workSiteEvaluatedDate: item['workSiteEvaluatedDate'],
-        workSiteEvaluatorSignature: item['workSiteEvaluatorSignature'],
         builderConfirmation: item['builderConfirmation'],
         builderConfirmationDate: item['builderConfirmationDate'],
-        builderConfirmationSignature: item['builderConfirmationSignature'],
         assessorName: item['assessorName'],
         status: item['status'],
       ),
@@ -122,10 +131,8 @@ class _InstallFormState extends State<InstallForm> {
     comments: '',
     workSiteEvaluator: '',
     workSiteEvaluatedDate: '',
-    workSiteEvaluatorSignature: '',
     builderConfirmation: '',
     builderConfirmationDate: '',
-    builderConfirmationSignature: '',
     assessorName: '',
     status: '',
   );
@@ -140,10 +147,8 @@ class _InstallFormState extends State<InstallForm> {
         comments: checkifEmpty(val[0].comments.toString()),
         workSiteEvaluator: checkifEmpty(val[0].workSiteEvaluator.toString()),
         workSiteEvaluatedDate: checkifEmpty(val[0].workSiteEvaluatedDate.toString()),
-        workSiteEvaluatorSignature: checkifEmpty(val[0].workSiteEvaluatorSignature.toString()),
         builderConfirmation: checkifEmpty(val[0].builderConfirmation.toString()),
         builderConfirmationDate: checkifEmpty(val[0].builderConfirmationDate.toString()),
-        builderConfirmationSignature: checkifEmpty(val[0].builderConfirmationSignature.toString()),
         assessorName: checkifEmpty(val[0].assessorName.toString()),
         status: checkifEmpty(val[0].status.toString()),
       );
@@ -185,13 +190,9 @@ class _InstallFormState extends State<InstallForm> {
           comments: _newForm.comments,
           workSiteEvaluator: _newForm.workSiteEvaluator,
           workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-          workSiteEvaluatorSignature:
-          _newForm.workSiteEvaluatorSignature,
           builderConfirmation: _newForm.builderConfirmation,
           builderConfirmationDate:
           _newForm.builderConfirmationDate,
-          builderConfirmationSignature:
-          _newForm.builderConfirmationSignature,
           assessorName: _newForm.assessorName,
           status: _newForm.status,
         );
@@ -269,13 +270,9 @@ class _InstallFormState extends State<InstallForm> {
                           comments: _newForm.comments,
                           workSiteEvaluator: _newForm.workSiteEvaluator,
                           workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-                          workSiteEvaluatorSignature:
-                          _newForm.workSiteEvaluatorSignature,
                           builderConfirmation: _newForm.builderConfirmation,
                           builderConfirmationDate:
                           _newForm.builderConfirmationDate,
-                          builderConfirmationSignature:
-                          _newForm.builderConfirmationSignature,
                           assessorName: _newForm.assessorName,
                           status: _newForm.status,
                         );
@@ -317,13 +314,9 @@ class _InstallFormState extends State<InstallForm> {
                           comments: _newForm.comments,
                           workSiteEvaluator: _newForm.workSiteEvaluator,
                           workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-                          workSiteEvaluatorSignature:
-                              _newForm.workSiteEvaluatorSignature,
                           builderConfirmation: _newForm.builderConfirmation,
                           builderConfirmationDate:
                               _newForm.builderConfirmationDate,
-                          builderConfirmationSignature:
-                              _newForm.builderConfirmationSignature,
                           assessorName: _newForm.assessorName,
                           status: _newForm.status,
                         );
@@ -358,13 +351,9 @@ class _InstallFormState extends State<InstallForm> {
                           comments: _newForm.comments,
                           workSiteEvaluator: _newForm.workSiteEvaluator,
                           workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-                          workSiteEvaluatorSignature:
-                              _newForm.workSiteEvaluatorSignature,
                           builderConfirmation: _newForm.builderConfirmation,
                           builderConfirmationDate:
                               _newForm.builderConfirmationDate,
-                          builderConfirmationSignature:
-                              _newForm.builderConfirmationSignature,
                           assessorName: _newForm.assessorName,
                           status: _newForm.status,
                         );
@@ -405,13 +394,9 @@ class _InstallFormState extends State<InstallForm> {
                           comments: _newForm.comments,
                           workSiteEvaluator: _newForm.workSiteEvaluator,
                           workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-                          workSiteEvaluatorSignature:
-                              _newForm.workSiteEvaluatorSignature,
                           builderConfirmation: _newForm.builderConfirmation,
                           builderConfirmationDate:
                               _newForm.builderConfirmationDate,
-                          builderConfirmationSignature:
-                              _newForm.builderConfirmationSignature,
                           assessorName: _newForm.assessorName,
                           status: _newForm.status,
                         );

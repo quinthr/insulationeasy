@@ -80,10 +80,8 @@ class _ChecklistFormState extends State<ChecklistForm> {
     comments: '',
     workSiteEvaluator: '',
     workSiteEvaluatedDate: null,
-    workSiteEvaluatorSignature: '',
     builderConfirmation: '',
     builderConfirmationDate: null,
-    builderConfirmationSignature: '',
     assessorName: '',
     status: '',
   );
@@ -101,14 +99,10 @@ class _ChecklistFormState extends State<ChecklistForm> {
               checkifEmpty(val[0].workSiteEvaluator.toString()),
           workSiteEvaluatedDate:
               checkifEmpty(val[0].workSiteEvaluatedDate.toString()),
-          workSiteEvaluatorSignature:
-              checkifEmpty(val[0].workSiteEvaluatorSignature.toString()),
           builderConfirmation:
               checkifEmpty(val[0].builderConfirmation.toString()),
           builderConfirmationDate:
               checkifEmpty(val[0].builderConfirmationDate.toString()),
-          builderConfirmationSignature:
-              checkifEmpty(val[0].builderConfirmationSignature.toString()),
           assessorName: checkifEmpty(val[0].assessorName.toString()),
           status: checkifEmpty(val[0].status.toString()),
         );
@@ -480,14 +474,10 @@ class _ChecklistFormState extends State<ChecklistForm> {
                                 workSiteEvaluator: _newForm.workSiteEvaluator,
                                 workSiteEvaluatedDate:
                                 _newForm.workSiteEvaluatedDate,
-                                workSiteEvaluatorSignature:
-                                _newForm.workSiteEvaluatorSignature,
                                 builderConfirmation:
                                 _newForm.builderConfirmation,
                                 builderConfirmationDate:
                                 _newForm.builderConfirmationDate,
-                                builderConfirmationSignature:
-                                _newForm.builderConfirmationSignature,
                                 assessorName: _newForm.assessorName,
                                 status: _newForm.status,
                               );
@@ -505,14 +495,10 @@ class _ChecklistFormState extends State<ChecklistForm> {
                                 workSiteEvaluator: _newForm.workSiteEvaluator,
                                 workSiteEvaluatedDate:
                                 _newForm.workSiteEvaluatedDate,
-                                workSiteEvaluatorSignature:
-                                _newForm.workSiteEvaluatorSignature,
                                 builderConfirmation:
                                 _newForm.builderConfirmation,
                                 builderConfirmationDate:
                                 _newForm.builderConfirmationDate,
-                                builderConfirmationSignature:
-                                _newForm.builderConfirmationSignature,
                                 assessorName: _newForm.assessorName,
                                 status: _newForm.status,
                               );

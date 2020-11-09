@@ -33,7 +33,15 @@ class HazardsDB {
     final dbPath = await sql.getDatabasesPath();
     return sql.openDatabase(path.join(dbPath, 'inseasy-installform.db'),
         onCreate: (db, version) {
-          return db.execute(
+          db.execute(
+              'CREATE TABLE installation_form_signatures('
+                  'signatureId INTEGER AUTOINCREMENT PRIMARY KEY, '
+                  'signatureName TEXT,'
+                  'signaturePoints TEXT,'
+                  'signatureImage BLOB,'
+                  'formId TEXT'
+                  ')');
+          db.execute(
               'CREATE TABLE installation_form_hazards('
                   'hazardId TEXT PRIMARY KEY, '
                   'hazardName TEXT,'
@@ -44,6 +52,37 @@ class HazardsDB {
                   'person TEXT,'
                   'status TEXT,'
                   'formId TEXT'
+                  ')');
+          db.execute(
+              'CREATE TABLE installation_form_images('
+                  'imageName TEXT PRIMARY KEY,'
+                  'imageData BLOB,'
+                  'indexnum TEXT,'
+                  'status TEXT,'
+                  'formId TEXT'
+                  ')');
+          db.execute(
+              'CREATE TABLE installation_form_checklist('
+                  'check_id INTEGER PRIMARY KEY AUTOINCREMENT, '
+                  'text TEXT,'
+                  'status TEXT,'
+                  'formId TEXT'
+                  ')');
+          return db.execute(
+              'CREATE TABLE installation_form_entry('
+                  'id INTEGER PRIMARY KEY AUTOINCREMENT, '
+                  'formId TEXT,'
+                  'orderNumber TEXT,'
+                  'builderName TEXT,'
+                  'address TEXT,'
+                  'date TEXT, '
+                  'comments TEXT,'
+                  'workSiteEvaluator TEXT,'
+                  'workSiteEvaluatedDate TEXT,'
+                  'builderConfirmation TEXT,'
+                  'builderConfirmationDate TEXT,'
+                  'assessorName TEXT,'
+                  'status TEXT'
                   ')');
         }, version: 1);
   }

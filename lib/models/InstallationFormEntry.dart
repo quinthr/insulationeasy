@@ -15,10 +15,8 @@ class InstallationFormEntry {
   final String comments;
   final String workSiteEvaluator;
   final String workSiteEvaluatedDate;
-  final String workSiteEvaluatorSignature;
   final String builderConfirmation;
   final String builderConfirmationDate;
-  final String builderConfirmationSignature;
   final String assessorName;
   final String status;
 
@@ -32,10 +30,8 @@ class InstallationFormEntry {
     this.comments,
     this.workSiteEvaluator,
     this.workSiteEvaluatedDate,
-    this.workSiteEvaluatorSignature,
     this.builderConfirmation,
     this.builderConfirmationDate,
-    this.builderConfirmationSignature,
     this.assessorName,
     this.status,
   });
@@ -50,10 +46,8 @@ class InstallationFormEntry {
       'comments': comments,
       'workSiteEvaluator': workSiteEvaluator,
       'workSiteEvaluatedDate': workSiteEvaluatedDate,
-      'workSiteEvaluatorSignature': workSiteEvaluatorSignature,
       'builderConfirmation': builderConfirmation,
       'builderConfirmationDate': builderConfirmationDate,
-      'builderConfirmationSignature': builderConfirmationSignature,
       'assessorName': assessorName,
       'status': status,
     };
@@ -67,6 +61,14 @@ class InstallationFormEntryDB {
     //await sql.deleteDatabase(test);
     return sql.openDatabase(path.join(dbPath, 'inseasy-installform.db'),
         onCreate: (db, version) {
+          db.execute(
+              'CREATE TABLE installation_form_signatures('
+                  'signatureId INTEGER AUTOINCREMENT PRIMARY KEY, '
+                  'signatureName TEXT,'
+                  'signaturePoints TEXT,'
+                  'signatureImage BLOB,'
+                  'formId TEXT'
+                  ')');
           db.execute(
               'CREATE TABLE installation_form_hazards('
                   'hazardId TEXT PRIMARY KEY, '
@@ -105,10 +107,8 @@ class InstallationFormEntryDB {
                   'comments TEXT,'
                   'workSiteEvaluator TEXT,'
                   'workSiteEvaluatedDate TEXT,'
-                  'workSiteEvaluatorSignature TEXT,'
                   'builderConfirmation TEXT,'
                   'builderConfirmationDate TEXT,'
-                  'builderConfirmationSignature TEXT,'
                   'assessorName TEXT,'
                   'status TEXT'
                   ')');

@@ -58,6 +58,46 @@ class _HazardsFormState extends State<HazardsForm> {
     person: '',
     status: ''
   );
+  var _hazard2 = Hazards(
+      formId: '',
+      hazardName: '',
+      probability: '',
+      consequence: '',
+      risk: '',
+      controlMeasure: '',
+      person: '',
+      status: ''
+  );
+  var _hazard3 = Hazards(
+      formId: '',
+      hazardName: '',
+      probability: '',
+      consequence: '',
+      risk: '',
+      controlMeasure: '',
+      person: '',
+      status: ''
+  );
+  var _hazard4 = Hazards(
+      formId: '',
+      hazardName: '',
+      probability: '',
+      consequence: '',
+      risk: '',
+      controlMeasure: '',
+      person: '',
+      status: ''
+  );
+  var _hazard5 = Hazards(
+      formId: '',
+      hazardName: '',
+      probability: '',
+      consequence: '',
+      risk: '',
+      controlMeasure: '',
+      person: '',
+      status: ''
+  );
   _HazardsFormState() {
     fetchAndSetFormData().then((val) =>
         setState(() {
@@ -79,6 +119,74 @@ class _HazardsFormState extends State<HazardsForm> {
         dropdownValue2 = val2[0].consequence;
         dropdownValue3 = val2[0].risk;
       })
+    );
+    fetchAndSetHazard('hazard2').then((val2) =>
+        setState(() {
+          _hazard2 = Hazards(
+            formId: _intFormId,
+            hazardName: val2[0].hazardName,
+            probability: val2[0].probability,
+            consequence: val2[0].consequence,
+            risk: val2[0].risk,
+            controlMeasure: val2[0].controlMeasure,
+            person: val2[0].person,
+            status: val2[0].status,
+          );
+          dropdownValue4 = val2[0].probability;
+          dropdownValue5 = val2[0].consequence;
+          dropdownValue6 = val2[0].risk;
+        })
+    );
+    fetchAndSetHazard('hazard3').then((val2) =>
+        setState(() {
+          _hazard3 = Hazards(
+            formId: _intFormId,
+            hazardName: val2[0].hazardName,
+            probability: val2[0].probability,
+            consequence: val2[0].consequence,
+            risk: val2[0].risk,
+            controlMeasure: val2[0].controlMeasure,
+            person: val2[0].person,
+            status: val2[0].status,
+          );
+          dropdownValue7 = val2[0].probability;
+          dropdownValue8 = val2[0].consequence;
+          dropdownValue9 = val2[0].risk;
+        })
+    );
+    fetchAndSetHazard('hazard4').then((val2) =>
+        setState(() {
+          _hazard4 = Hazards(
+            formId: _intFormId,
+            hazardName: val2[0].hazardName,
+            probability: val2[0].probability,
+            consequence: val2[0].consequence,
+            risk: val2[0].risk,
+            controlMeasure: val2[0].controlMeasure,
+            person: val2[0].person,
+            status: val2[0].status,
+          );
+          dropdownValue10 = val2[0].probability;
+          dropdownValue11 = val2[0].consequence;
+          dropdownValue12 = val2[0].risk;
+        })
+    );
+    fetchAndSetHazard('hazard5').then((val2) =>
+        setState(() {
+          _hazard5 = Hazards(
+            formId: _intFormId,
+            hazardName: val2[0].hazardName,
+            probability: val2[0].probability,
+            consequence: val2[0].consequence,
+            risk: val2[0].risk,
+            controlMeasure: val2[0].controlMeasure,
+            person: val2[0].person,
+            status: val2[0].status,
+          );
+          dropdownValue13 = val2[0].probability;
+          dropdownValue14 = val2[0].consequence;
+          dropdownValue15 = val2[0].risk;
+        })
     );
   }
 
@@ -208,7 +316,7 @@ class _HazardsFormState extends State<HazardsForm> {
                             '2 - Lost time injury or illness',
                             '3 - Medical treatment required',
                             '4 - First aid treatment',
-                            '5 - Practically impossible',
+                            '5 - Incident report only',
                             'Not applicable',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -434,7 +542,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard2',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard2',
+                              'probability': newValue,
+                              'consequence': _hazard2.consequence,
+                              'risk': _hazard2.risk,
+                              'controlMeasure': _hazard2.controlMeasure,
+                              'person': _hazard2.person,
+                              'status': _hazard2.status,
+                            });
                             setState(() {
+                              _hazard2 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard2',
+                                probability: newValue,
+                                consequence: _hazard2.consequence,
+                                risk: _hazard2.risk,
+                                controlMeasure: _hazard2.controlMeasure,
+                                person: _hazard2.person,
+                                status: _hazard2.status,
+                              );
                               dropdownValue4 = newValue;
                             });
                           })),
@@ -466,7 +595,7 @@ class _HazardsFormState extends State<HazardsForm> {
                             '2 - Lost time injury or illness',
                             '3 - Medical treatment required',
                             '4 - First aid treatment',
-                            '5 - Practically impossible',
+                            '5 - Incident report only',
                             'Not applicable',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -475,7 +604,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard2',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard2',
+                              'probability': _hazard2.probability,
+                              'consequence': newValue,
+                              'risk': _hazard2.risk,
+                              'controlMeasure': _hazard2.controlMeasure,
+                              'person': _hazard2.person,
+                              'status': _hazard2.status,
+                            });
                             setState(() {
+                              _hazard2 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard2',
+                                probability: _hazard2.probability,
+                                consequence: newValue,
+                                risk: _hazard2.risk,
+                                controlMeasure: _hazard2.controlMeasure,
+                                person: _hazard2.person,
+                                status: _hazard2.status,
+                              );
                               dropdownValue5 = newValue;
                             });
                           })),
@@ -515,7 +665,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard2',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard2',
+                              'probability': _hazard2.probability,
+                              'consequence': _hazard2.consequence,
+                              'risk': newValue,
+                              'controlMeasure': _hazard2.controlMeasure,
+                              'person': _hazard2.person,
+                              'status': _hazard2.status,
+                            });
                             setState(() {
+                              _hazard2 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard2',
+                                probability: _hazard2.probability,
+                                consequence: _hazard2.consequence,
+                                risk: newValue,
+                                controlMeasure: _hazard2.controlMeasure,
+                                person: _hazard2.person,
+                                status: _hazard2.status,
+                              );
                               dropdownValue6 = newValue;
                             });
                           })),
@@ -524,6 +695,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('controlMeasure2'),
+                    initialValue: _hazard2.controlMeasure,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard2',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard2',
+                        'probability': _hazard2.probability,
+                        'consequence': _hazard2.consequence,
+                        'risk': _hazard2.risk,
+                        'controlMeasure': value,
+                        'person': _hazard2.person,
+                        'status': _hazard2.status,
+                      });
+                      setState(() {
+                        _hazard2 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard2',
+                          probability: _hazard2.probability,
+                          consequence: _hazard2.consequence,
+                          risk: _hazard2.risk,
+                          controlMeasure: value,
+                          person: _hazard2.person,
+                          status: _hazard2.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Control Measure',
                       contentPadding: EdgeInsets.all(3),
@@ -538,6 +735,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('person2'),
+                    initialValue: _hazard2.person,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard2',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard2',
+                        'probability': _hazard2.probability,
+                        'consequence': _hazard2.consequence,
+                        'risk': _hazard2.risk,
+                        'controlMeasure': _hazard2.controlMeasure,
+                        'person': value,
+                        'status': _hazard2.status,
+                      });
+                      setState(() {
+                        _hazard2 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard2',
+                          probability: _hazard2.probability,
+                          consequence: _hazard2.consequence,
+                          risk: _hazard2.risk,
+                          controlMeasure: _hazard2.controlMeasure,
+                          person: value,
+                          status: _hazard2.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Person',
                       contentPadding: EdgeInsets.all(3),
@@ -598,7 +821,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard3',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard3',
+                              'probability': newValue,
+                              'consequence': _hazard3.consequence,
+                              'risk': _hazard3.risk,
+                              'controlMeasure': _hazard3.controlMeasure,
+                              'person': _hazard3.person,
+                              'status': _hazard3.status,
+                            });
                             setState(() {
+                              _hazard3 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard3',
+                                probability: newValue,
+                                consequence: _hazard3.consequence,
+                                risk: _hazard3.risk,
+                                controlMeasure: _hazard3.controlMeasure,
+                                person: _hazard3.person,
+                                status: _hazard3.status,
+                              );
                               dropdownValue7 = newValue;
                             });
                           })),
@@ -630,7 +874,7 @@ class _HazardsFormState extends State<HazardsForm> {
                             '2 - Lost time injury or illness',
                             '3 - Medical treatment required',
                             '4 - First aid treatment',
-                            '5 - Practically impossible',
+                            '5 - Incident report only',
                             'Not applicable',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -639,7 +883,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard3',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard3',
+                              'probability': _hazard3.probability,
+                              'consequence': newValue,
+                              'risk': _hazard3.risk,
+                              'controlMeasure': _hazard3.controlMeasure,
+                              'person': _hazard3.person,
+                              'status': _hazard3.status,
+                            });
                             setState(() {
+                              _hazard3 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard3',
+                                probability: _hazard3.probability,
+                                consequence: newValue,
+                                risk: _hazard3.risk,
+                                controlMeasure: _hazard3.controlMeasure,
+                                person: _hazard3.person,
+                                status: _hazard3.status,
+                              );
                               dropdownValue8 = newValue;
                             });
                           })),
@@ -679,7 +944,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard3',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard3',
+                              'probability': _hazard3.probability,
+                              'consequence': _hazard3.consequence,
+                              'risk': newValue,
+                              'controlMeasure': _hazard3.controlMeasure,
+                              'person': _hazard3.person,
+                              'status': _hazard3.status,
+                            });
                             setState(() {
+                              _hazard3 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard3',
+                                probability: _hazard3.probability,
+                                consequence: _hazard3.consequence,
+                                risk: newValue,
+                                controlMeasure: _hazard3.controlMeasure,
+                                person: _hazard3.person,
+                                status: _hazard3.status,
+                              );
                               dropdownValue9 = newValue;
                             });
                           })),
@@ -688,6 +974,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('controlMeasure3'),
+                    initialValue: _hazard3.controlMeasure,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard3',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard3',
+                        'probability': _hazard3.probability,
+                        'consequence': _hazard3.consequence,
+                        'risk': _hazard3.risk,
+                        'controlMeasure': value,
+                        'person': _hazard3.person,
+                        'status': _hazard3.status,
+                      });
+                      setState(() {
+                        _hazard3 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard3',
+                          probability: _hazard3.probability,
+                          consequence: _hazard3.consequence,
+                          risk: _hazard3.risk,
+                          controlMeasure: value,
+                          person: _hazard3.person,
+                          status: _hazard3.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Control Measure',
                       contentPadding: EdgeInsets.all(3),
@@ -702,6 +1014,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('person3'),
+                    initialValue: _hazard3.person,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard3',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard3',
+                        'probability': _hazard3.probability,
+                        'consequence': _hazard3.consequence,
+                        'risk': _hazard3.risk,
+                        'controlMeasure': _hazard3.controlMeasure,
+                        'person': value,
+                        'status': _hazard3.status,
+                      });
+                      setState(() {
+                        _hazard3 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard3',
+                          probability: _hazard3.probability,
+                          consequence: _hazard3.consequence,
+                          risk: _hazard3.risk,
+                          controlMeasure: _hazard3.controlMeasure,
+                          person: value,
+                          status: _hazard3.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Person',
                       contentPadding: EdgeInsets.all(3),
@@ -762,7 +1100,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard4',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard4',
+                              'probability': newValue,
+                              'consequence': _hazard4.consequence,
+                              'risk': _hazard4.risk,
+                              'controlMeasure': _hazard4.controlMeasure,
+                              'person': _hazard4.person,
+                              'status': _hazard4.status,
+                            });
                             setState(() {
+                              _hazard4 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard4',
+                                probability: newValue,
+                                consequence: _hazard4.consequence,
+                                risk: _hazard4.risk,
+                                controlMeasure: _hazard4.controlMeasure,
+                                person: _hazard4.person,
+                                status: _hazard4.status,
+                              );
                               dropdownValue10 = newValue;
                             });
                           })),
@@ -794,7 +1153,7 @@ class _HazardsFormState extends State<HazardsForm> {
                             '2 - Lost time injury or illness',
                             '3 - Medical treatment required',
                             '4 - First aid treatment',
-                            '5 - Practically impossible',
+                            '5 - Incident report only',
                             'Not applicable',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -803,7 +1162,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard4',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard4',
+                              'probability': _hazard4.probability,
+                              'consequence': newValue,
+                              'risk': _hazard4.risk,
+                              'controlMeasure': _hazard4.controlMeasure,
+                              'person': _hazard4.person,
+                              'status': _hazard4.status,
+                            });
                             setState(() {
+                              _hazard4 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard4',
+                                probability: _hazard4.probability,
+                                consequence: newValue,
+                                risk: _hazard4.risk,
+                                controlMeasure: _hazard4.controlMeasure,
+                                person: _hazard4.person,
+                                status: _hazard4.status,
+                              );
                               dropdownValue11 = newValue;
                             });
                           })),
@@ -843,7 +1223,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard4',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard4',
+                              'probability': _hazard4.probability,
+                              'consequence': _hazard4.consequence,
+                              'risk': newValue,
+                              'controlMeasure': _hazard4.controlMeasure,
+                              'person': _hazard4.person,
+                              'status': '_hazard4.status',
+                            });
                             setState(() {
+                              _hazard4 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard4',
+                                probability: _hazard4.probability,
+                                consequence: _hazard4.consequence,
+                                risk: newValue,
+                                controlMeasure: _hazard4.controlMeasure,
+                                person: _hazard4.person,
+                                status: _hazard4.status,
+                              );
                               dropdownValue12 = newValue;
                             });
                           })),
@@ -852,6 +1253,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('controlMeasure4'),
+                    initialValue: _hazard4.controlMeasure,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard4',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard4',
+                        'probability': _hazard4.probability,
+                        'consequence': _hazard4.consequence,
+                        'risk': _hazard4.risk,
+                        'controlMeasure': value,
+                        'person': _hazard4.person,
+                        'status': _hazard4.status,
+                      });
+                      setState(() {
+                        _hazard4 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard4',
+                          probability: _hazard4.probability,
+                          consequence: _hazard4.consequence,
+                          risk: _hazard4.risk,
+                          controlMeasure: value,
+                          person: _hazard4.person,
+                          status: _hazard4.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Control Measure',
                       contentPadding: EdgeInsets.all(3),
@@ -866,6 +1293,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('person4'),
+                    initialValue: _hazard4.person,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard4',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard4',
+                        'probability': _hazard4.probability,
+                        'consequence': _hazard4.consequence,
+                        'risk': _hazard4.risk,
+                        'controlMeasure': _hazard4.controlMeasure,
+                        'person': value,
+                        'status': _hazard4.status,
+                      });
+                      setState(() {
+                        _hazard4 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard4',
+                          probability: _hazard4.probability,
+                          consequence: _hazard4.consequence,
+                          risk: _hazard4.risk,
+                          controlMeasure: _hazard4.controlMeasure,
+                          person: value,
+                          status: _hazard4.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Person',
                       contentPadding: EdgeInsets.all(3),
@@ -926,7 +1379,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard5',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard5',
+                              'probability': newValue,
+                              'consequence': _hazard5.consequence,
+                              'risk': _hazard5.risk,
+                              'controlMeasure': _hazard5.controlMeasure,
+                              'person': _hazard5.person,
+                              'status': _hazard5.status,
+                            });
                             setState(() {
+                              _hazard5 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard5',
+                                probability: newValue,
+                                consequence: _hazard5.consequence,
+                                risk: _hazard5.risk,
+                                controlMeasure: _hazard5.controlMeasure,
+                                person: _hazard5.person,
+                                status: _hazard5.status,
+                              );
                               dropdownValue13 = newValue;
                             });
                           })),
@@ -958,7 +1432,7 @@ class _HazardsFormState extends State<HazardsForm> {
                             '2 - Lost time injury or illness',
                             '3 - Medical treatment required',
                             '4 - First aid treatment',
-                            '5 - Practically impossible',
+                            '5 - Incident report only',
                             'Not applicable',
                           ].map<DropdownMenuItem<String>>((String value) {
                             return DropdownMenuItem<String>(
@@ -967,7 +1441,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard5',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard5',
+                              'probability': _hazard5.probability,
+                              'consequence': newValue,
+                              'risk': _hazard5.risk,
+                              'controlMeasure': _hazard5.controlMeasure,
+                              'person': _hazard5.person,
+                              'status': _hazard5.status,
+                            });
                             setState(() {
+                              _hazard5 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard5',
+                                probability: _hazard5.probability,
+                                consequence: newValue,
+                                risk: _hazard5.risk,
+                                controlMeasure: _hazard5.controlMeasure,
+                                person: _hazard5.person,
+                                status: _hazard5.status,
+                              );
                               dropdownValue14 = newValue;
                             });
                           })),
@@ -1007,7 +1502,28 @@ class _HazardsFormState extends State<HazardsForm> {
                             );
                           }).toList(),
                           onChanged: (String newValue) {
+                            HazardsDB.insert('installation_form_hazards', {
+                              'hazardId': _intFormId+'-hazard5',
+                              'formId': _intFormId,
+                              'hazardName': 'hazard5',
+                              'probability': _hazard5.probability,
+                              'consequence': _hazard5.consequence,
+                              'risk': newValue,
+                              'controlMeasure': _hazard5.controlMeasure,
+                              'person': _hazard5.person,
+                              'status': _hazard5.status,
+                            });
                             setState(() {
+                              _hazard5 = Hazards(
+                                formId: _intFormId,
+                                hazardName: 'hazard5',
+                                probability: _hazard5.probability,
+                                consequence: _hazard5.consequence,
+                                risk: newValue,
+                                controlMeasure: _hazard5.controlMeasure,
+                                person: _hazard5.person,
+                                status: _hazard5.status,
+                              );
                               dropdownValue15 = newValue;
                             });
                           })),
@@ -1016,6 +1532,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('controlMeasure5'),
+                    initialValue: _hazard5.controlMeasure,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard5',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard5',
+                        'probability': _hazard5.probability,
+                        'consequence': _hazard5.consequence,
+                        'risk': _hazard5.risk,
+                        'controlMeasure': value,
+                        'person': _hazard5.person,
+                        'status': _hazard5.status,
+                      });
+                      setState(() {
+                        _hazard5 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard5',
+                          probability: _hazard5.probability,
+                          consequence: _hazard5.consequence,
+                          risk: _hazard5.risk,
+                          controlMeasure: value,
+                          person: _hazard5.person,
+                          status: _hazard5.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Control Measure',
                       contentPadding: EdgeInsets.all(3),
@@ -1030,6 +1572,32 @@ class _HazardsFormState extends State<HazardsForm> {
                   ),
                   TextFormField(
                     key: PageStorageKey('person5'),
+                    initialValue: _hazard5.person,
+                    onChanged: (value) {
+                      HazardsDB.insert('installation_form_hazards', {
+                        'hazardId': _intFormId+'-hazard5',
+                        'formId': _intFormId,
+                        'hazardName': 'hazard5',
+                        'probability': _hazard5.probability,
+                        'consequence': _hazard5.consequence,
+                        'risk': _hazard5.risk,
+                        'controlMeasure': _hazard5.controlMeasure,
+                        'person': value,
+                        'status': _hazard5.status,
+                      });
+                      setState(() {
+                        _hazard5 = Hazards(
+                          formId: _intFormId,
+                          hazardName: 'hazard5',
+                          probability: _hazard5.probability,
+                          consequence: _hazard5.consequence,
+                          risk: _hazard5.risk,
+                          controlMeasure: _hazard5.controlMeasure,
+                          person: value,
+                          status: _hazard5.status,
+                        );
+                      });
+                    },
                     decoration: InputDecoration(
                       labelText: 'Person',
                       contentPadding: EdgeInsets.all(3),

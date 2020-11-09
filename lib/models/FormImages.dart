@@ -30,6 +30,14 @@ class FormImagesDB {
     return sql.openDatabase(path.join(dbPath, 'inseasy-installform.db'),
         onCreate: (db, version) {
           db.execute(
+              'CREATE TABLE installation_form_signatures('
+                  'signatureId INTEGER AUTOINCREMENT PRIMARY KEY, '
+                  'signatureName TEXT,'
+                  'signaturePoints TEXT,'
+                  'signatureImage BLOB,'
+                  'formId TEXT'
+                  ')');
+          db.execute(
               'CREATE TABLE installation_form_hazards('
                   'hazardId TEXT PRIMARY KEY, '
                   'hazardName TEXT,'
@@ -67,10 +75,8 @@ class FormImagesDB {
                   'comments TEXT,'
                   'workSiteEvaluator TEXT,'
                   'workSiteEvaluatedDate TEXT,'
-                  'workSiteEvaluatorSignature TEXT,'
                   'builderConfirmation TEXT,'
                   'builderConfirmationDate TEXT,'
-                  'builderConfirmationSignature TEXT,'
                   'assessorName TEXT,'
                   'status TEXT'
                   ')');
