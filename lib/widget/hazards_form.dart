@@ -99,7 +99,7 @@ class _HazardsFormState extends State<HazardsForm> {
       status: ''
   );
   _HazardsFormState() {
-    fetchAndSetFormData().then((val) =>
+    fetchFormData().then((val) =>
         setState(() {
           _intFormId = val[0].formId.toString();
         }));
@@ -1628,7 +1628,9 @@ class _HazardsFormState extends State<HazardsForm> {
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => FinalSubmission()),
+                        MaterialPageRoute(
+                            settings: RouteSettings(name: "finalform"),
+                            builder: (context) => FinalSubmission()),
                       );
                       // Validate returns true if the form is valid, or false
                       // otherwise.

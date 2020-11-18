@@ -1,16 +1,48 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 
 import './install_form.dart';
 import './widget/entries_list.dart';
+import './login_form.dart';
+import './models/PopUpMenuList.dart';
+import './models/InstallationFormEntry.dart';
 
 void main() {
   runApp(MyApp());
 }
 
+Future<String> _removeUser() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('workerName');
+}
+
+void newAction(String choice, BuildContext context) {
+  if (choice == PopUpMenuList.Logout) {
+    _removeUser();
+    Navigator.pushAndRemoveUntil(
+        context,
+        PageRouteBuilder(pageBuilder: (BuildContext context, Animation animation,
+            Animation secondaryAnimation) {
+          return AuthScreen();
+        }, transitionsBuilder: (BuildContext context, Animation<double> animation,
+            Animation<double> secondaryAnimation, Widget child) {
+          return new SlideTransition(
+            position: new Tween<Offset>(
+              begin: const Offset(1.0, 0.0),
+              end: Offset.zero,
+            ).animate(animation),
+            child: child,
+          );
+        }),
+            (Route route) => false);
+  }
+}
+
 class MyApp extends StatelessWidget {
+  static const routeName = '/home';
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
@@ -32,10 +64,12 @@ class MyApp extends StatelessWidget {
         // closer together (more dense) than on mobile platforms.
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: MyHomePage(title: 'Insulation Easy Australia'),
+      home: AuthScreen(),
     );
   }
 }
+
+
 
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
@@ -56,7 +90,9 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-
+  _MyHomePageState() {
+    generateFormId();
+  }
   @override
   Widget build(BuildContext context) {
     // This method is rerun every time setState is called, for instance as done
@@ -72,9 +108,19 @@ class _MyHomePageState extends State<MyHomePage> {
         // title: Text(widget.title, style: TextStyle(color: Colors.white)),
         title: Image.asset('assets/images/title.png', fit: BoxFit.cover, height: 38),
         actions: <Widget>[
-          IconButton(
-            icon: Icon(Icons.drafts, color: Colors.white),
-            onPressed: () {},)
+          PopupMenuButton<String>(
+            color: Colors.white,
+            icon: Icon(Icons.more_horiz, color: Colors.white),
+            onSelected: (val) => newAction(val, context),
+            itemBuilder: (BuildContext context) {
+              return PopUpMenuList.choices.map((String choice) {
+                return PopupMenuItem<String>(
+                  value: choice,
+                  child: Text(choice),
+                );
+              }).toList();
+            },
+          )
         ],
       ),
       body: Column(
@@ -109,7 +155,8 @@ class _MyHomePageState extends State<MyHomePage> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => InstallForm()),
+            MaterialPageRoute(
+                builder: (context) => InstallForm()),
           );
         },
         child: Icon(Icons.add, color: Colors.white),

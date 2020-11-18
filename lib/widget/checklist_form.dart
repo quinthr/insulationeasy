@@ -66,6 +66,7 @@ class _ChecklistFormState extends State<ChecklistForm> {
   var _checked17 = false;
   String _intFormId = '';
   String _intComments = '';
+  String _intUser = '';
   List<Asset> images = List<Asset>();
   List<Image> images2 = List<Image>();
   String _error = 'No Error Dectected';
@@ -84,10 +85,15 @@ class _ChecklistFormState extends State<ChecklistForm> {
     builderConfirmationDate: null,
     assessorName: '',
     status: '',
+    workerName: '',
   );
-
+  @override
+  void initState() {
+    super.initState();
+  }
   _ChecklistFormState() {
-    fetchAndSetFormData().then((val) => setState(() {
+    fetchFormData().then((val) => setState(() {
+        print("CHECKLIST CALLED");
         _newForm = InstallationFormEntry(
           formId: val[0].formId.toString(),
           builderName: checkifEmpty(val[0].builderName.toString()),
@@ -105,8 +111,11 @@ class _ChecklistFormState extends State<ChecklistForm> {
               checkifEmpty(val[0].builderConfirmationDate.toString()),
           assessorName: checkifEmpty(val[0].assessorName.toString()),
           status: checkifEmpty(val[0].status.toString()),
+            workerName: val[0].workerName.toString()
         );
         _intFormId = val[0].formId.toString();
+        print("FORM ID CHECKLIST:" +_intFormId.toString());
+        _intUser = val[0].workerName.toString();
         _intComments = checkifEmpty(val[0].comments.toString());
         commentsController.text = _intComments;
         print(_intComments);
@@ -285,7 +294,7 @@ class _ChecklistFormState extends State<ChecklistForm> {
           ],
         ),
         body: FutureBuilder(
-            future: fetchAndSetFormData(),
+            future: fetchFormData(),
             builder: (ctx, snapshot) => Container(
                     child: SingleChildScrollView(
                         padding: EdgeInsets.symmetric(horizontal: 10),
@@ -480,6 +489,7 @@ class _ChecklistFormState extends State<ChecklistForm> {
                                 _newForm.builderConfirmationDate,
                                 assessorName: _newForm.assessorName,
                                 status: _newForm.status,
+                                workerName: _intUser,
                               );
                               InstallationFormEntryDB.update(
                                   _intFormId, _newForm);
@@ -501,6 +511,7 @@ class _ChecklistFormState extends State<ChecklistForm> {
                                 _newForm.builderConfirmationDate,
                                 assessorName: _newForm.assessorName,
                                 status: _newForm.status,
+                                workerName: _intUser,
                               );
                               InstallationFormEntryDB.update(
                                   _intFormId, _newForm);
@@ -718,6 +729,7 @@ class _ChecklistFormState extends State<ChecklistForm> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
+                                        settings: RouteSettings(name: "hazardsform"),
                                         builder: (context) => HazardsForm()),
                                   );
                                   // Validate returns true if the form is valid, or false

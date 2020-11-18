@@ -5,7 +5,7 @@ import 'package:path/path.dart' as path;
 import 'package:sqflite/sqlite_api.dart';
 
 class Hazards {
-  final int hazard_id;
+  final String hazardId;
   final String hazardName;
   final String probability;
   final String consequence;
@@ -16,7 +16,7 @@ class Hazards {
   final String formId;
 
   Hazards ({
-    this.hazard_id,
+    this.hazardId,
     this.hazardName,
     this.probability,
     this.consequence,
@@ -26,6 +26,21 @@ class Hazards {
     this.status,
     this.formId,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'hazardId': hazardId,
+      'hazardName': hazardName,
+      'probability': probability,
+      'consequence': consequence,
+      'risk': risk,
+      'controlMeasure': controlMeasure,
+      'person': person,
+      'status': status,
+      'formId': formId,
+    };
+  }
+
 }
 
 class HazardsDB {
@@ -35,7 +50,7 @@ class HazardsDB {
         onCreate: (db, version) {
           db.execute(
               'CREATE TABLE installation_form_signatures('
-                  'signatureId INTEGER AUTOINCREMENT PRIMARY KEY, '
+                  'signatureId INTEGER PRIMARY KEY AUTOINCREMENT, '
                   'signatureName TEXT,'
                   'signaturePoints TEXT,'
                   'signatureImage BLOB,'
@@ -82,7 +97,8 @@ class HazardsDB {
                   'builderConfirmation TEXT,'
                   'builderConfirmationDate TEXT,'
                   'assessorName TEXT,'
-                  'status TEXT'
+                  'status TEXT,'
+                  'user TEXT'
                   ')');
         }, version: 1);
   }
@@ -108,5 +124,48 @@ class HazardsDB {
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await HazardsDB.database();
     return db.query(table);
+  }
+
+  static Future<dynamic> SetDone(String formId) async {
+    final db = await HazardsDB.database();
+    final getData =  await db.query(
+        'installation_form_hazards',
+        where: "formId = ?",
+        whereArgs: [formId],
+    );
+    var dataList = getData.map(
+          (item) => Hazards(
+            hazardId: item['hazardId'],
+            hazardName: item['hazardName'],
+            probability: item['probability'],
+            consequence: item['consequence'],
+            risk: item['risk'],
+            controlMeasure: item['controlMeasure'],
+            person: item['person'],
+            status: 'Awaiting Upload',
+            formId: item['formId'],
+      ),
+    ).toList();
+    print(dataList);
+    print(dataList.length);
+    for (var i=0; i<dataList.length; i++){
+      var updated = Hazards(
+        hazardId: dataList[i].hazardId,
+        hazardName: dataList[i].hazardName,
+        probability: dataList[i].probability,
+        consequence: dataList[i].consequence,
+        risk: dataList[i].risk,
+        controlMeasure: dataList[i].controlMeasure,
+        person: dataList[i].person,
+        status: dataList[i].status,
+        formId: dataList[i].formId,
+      );
+      await db.update(
+        'installation_form_hazards',
+        updated.toMap(),
+        where: "formId = ? and hazardName = ?",
+        whereArgs: [formId, dataList[i].hazardName],
+      );
+    }
   }
 }

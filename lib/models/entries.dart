@@ -1,15 +1,15 @@
 import 'package:flutter/foundation.dart';
 
 class Entry {
-  final String id;
   final String orderNumber;
   final String builderName;
-  final DateTime date;
+  final String orderDate;
+  final String formId;
 
   Entry({
-    @required this.id,
     @required this.orderNumber,
     @required this.builderName,
-    @required this.date
+    @required this.orderDate,
+    @required this.formId
   });
 }

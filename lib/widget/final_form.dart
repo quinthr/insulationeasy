@@ -3,10 +3,16 @@ import 'dart:math';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
+
 import 'package:flutter/material.dart';
 import 'package:signature/signature.dart';
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:mobile_app/models/Checklist.dart';
+import 'package:mobile_app/models/FormImages.dart';
+import 'package:mobile_app/models/Hazards.dart';
+import '../install_form.dart';
 import '../models/InstallationFormEntry.dart';
+import '../models/SignatureForm.dart';
 import '../install_form.dart';
 
 class FinalSubmission extends StatefulWidget {
@@ -14,8 +20,36 @@ class FinalSubmission extends StatefulWidget {
   _FinalSubmissionState createState() => _FinalSubmissionState();
 }
 
+Future<dynamic> fetchAndSetSignautreFormData(String signatureName) async{
+  var _intFormId = await generateFormId();
+  final dataList = await SignatureFormDB.getOneFormData(_intFormId, _intFormId+signatureName);
+
+  var formData = dataList.map(
+        (item) => SignatureForm(
+      signatureName: item['signatureName'],
+      signaturePoints: item['signaturePoints'],
+      signatureImage: item['signatureImage'],
+      formId: item['formId'],
+    ),
+  ).toList();
+  print(formData);
+  if (formData == null){
+    return 0;
+  }
+  return formData;
+}
+
+Future<String> _removeFormId() async {
+  final prefs = await SharedPreferences.getInstance();
+  prefs.remove('formId');
+  generateFormId();
+}
+
+
+
 class _FinalSubmissionState extends State<FinalSubmission> {
   final _form2 = GlobalKey<FormState>();
+  final GlobalKey<ScaffoldState> _finalformscaffold = new GlobalKey<ScaffoldState>();
   DateTime selectedDate2 = DateTime.now();
   DateTime selectedDate3 = DateTime.now();
   var dateController2 = TextEditingController();
@@ -26,12 +60,15 @@ class _FinalSubmissionState extends State<FinalSubmission> {
   String _intAssessorName = '';
   String _intDate2 = '';
   String _intDate3 = '';
-  final SignatureController _signatureController = SignatureController(
+  String _intUser = '';
+  final snackBar = SnackBar(content: Text('Please enter your signature.'));
+  var _signatureController = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
     exportBackgroundColor: Colors.white,
+    points: null,
   );
-  final SignatureController _signatureController2 = SignatureController(
+  var _signatureController2 = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
     exportBackgroundColor: Colors.white,
@@ -50,10 +87,38 @@ class _FinalSubmissionState extends State<FinalSubmission> {
     builderConfirmationDate: null,
     assessorName: '',
     status: '',
+    workerName: '',
   );
-
+  var _newSignature = SignatureForm(
+    signatureName: '',
+    signaturePoints: null,
+    signatureImage: null,
+    formId: '',
+  );
+  var _newSignature2 = SignatureForm(
+    signatureName: '',
+    signaturePoints: null,
+    signatureImage: null,
+    formId: '',
+  );
+  void _saveSignature(SignatureController signatureController,String signatureName) async {
+    if (signatureController.isNotEmpty) {
+      var data = await signatureController.toPngBytes();
+      var points = signatureController.points;
+      var simplified =
+      points.map((e) => [e.offset.dx, e.offset.dy, e.type.index]).toList();
+      String encode = json.encode(simplified);
+      _newSignature = SignatureForm(
+        signatureName: _intFormId+'-'+signatureName,
+        signaturePoints: encode,
+        signatureImage: data,
+        formId: _intFormId,
+      );
+      SignatureFormDB.update(_intFormId, _newSignature.signatureName, _newSignature);
+    }
+  }
   _FinalSubmissionState() {
-    fetchAndSetFormData().then((val) => setState(() {
+    fetchFormData().then((val) => setState(() {
           _newForm = InstallationFormEntry(
             formId: val[0].formId.toString(),
             builderName: checkifEmpty(val[0].builderName.toString()),
@@ -71,8 +136,10 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                 checkifEmpty(val[0].builderConfirmationDate.toString()),
             assessorName: checkifEmpty(val[0].assessorName.toString()),
             status: checkifEmpty(val[0].status.toString()),
+            workerName: val[0].workerName.toString(),
           );
           _intFormId = val[0].formId.toString();
+          print(_intFormId);
           _intWorkSiteEvaluator =
               checkifEmpty(val[0].workSiteEvaluator.toString());
           _intBuilderConfirmation =
@@ -80,11 +147,30 @@ class _FinalSubmissionState extends State<FinalSubmission> {
           _intAssessorName = checkifEmpty(val[0].assessorName.toString());
           _intDate2 = checkifEmpty(val[0].workSiteEvaluatedDate.toString());
           _intDate3 = checkifEmpty(val[0].builderConfirmationDate.toString());
+          _intUser = val[0].workerName.toString();
           dateController2.text = _intDate2;
           dateController3.text = _intDate3;
           selectedDate2 = DateTime.parse(_intDate2);
           selectedDate3 = DateTime.parse(_intDate3);
         }));
+    fetchAndSetSignautreFormData('-WorkEvaluatorSignature').then((val2) => setState(() {
+      var decoded = json.decode(val2[0].signaturePoints) as List;
+      var asPoints = decoded
+          .map((e) => Point(Offset(e[0], e[1]), PointType.values[e[2]]))
+          .toList();
+      print('Points');
+      print(asPoints);
+      _signatureController.points=asPoints;
+    }));
+    fetchAndSetSignautreFormData('-BuilderSignature').then((val3) => setState(() {
+      var decoded = json.decode(val3[0].signaturePoints) as List;
+      var asPoints = decoded
+          .map((e) => Point(Offset(e[0], e[1]), PointType.values[e[2]]))
+          .toList();
+      print('Points');
+      print(asPoints);
+      _signatureController2.points=asPoints;
+    }));
   }
 
   Future<void> _selectDate2(BuildContext context) async {
@@ -113,6 +199,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
           builderConfirmationDate: _newForm.builderConfirmationDate,
           assessorName: _newForm.assessorName,
           status: _newForm.status,
+          workerName: _intUser,
         );
         InstallationFormEntryDB.update(_intFormId, _newForm);
       });
@@ -144,6 +231,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
           builderConfirmationDate: "${selectedDate3}".split(' ')[0],
           assessorName: _newForm.assessorName,
           status: _newForm.status,
+          workerName: _intUser,
         );
         InstallationFormEntryDB.update(_intFormId, _newForm);
       });
@@ -151,11 +239,14 @@ class _FinalSubmissionState extends State<FinalSubmission> {
 
   void _saveForm() {
     _form2.currentState.save();
+    _saveSignature(_signatureController, 'WorkEvaluatorSignature');
+    _saveSignature(_signatureController2, 'BuilderSignature');
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _finalformscaffold,
         appBar: AppBar(
           title: Text("Submission", style: TextStyle(color: Colors.white)),
           actions: <Widget>[
@@ -171,7 +262,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
           ],
         ),
         body: FutureBuilder(
-            future: fetchAndSetFormData(),
+            future: fetchFormData(),
             builder: (ctx, snapshot) => snapshot.connectionState ==
                     ConnectionState.waiting
                 ? Center(
@@ -230,6 +321,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                         _newForm.builderConfirmationDate,
                                     assessorName: _newForm.assessorName,
                                     status: _newForm.status,
+                                    workerName: _newForm.workerName,
                                   );
                                   InstallationFormEntryDB.update(_intFormId, _newForm);
                                 },
@@ -276,6 +368,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                         _newForm.builderConfirmationDate,
                                     assessorName: _newForm.assessorName,
                                     status: _newForm.status,
+                                    workerName: _newForm.workerName,
                                   );
                                 },
                               ),
@@ -308,34 +401,53 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
                                     //SHOW EXPORTED IMAGE IN NEW ROUTE
-                                    IconButton(
-                                      icon: const Icon(Icons.check),
-                                      color: Colors.white,
+                                    FlatButton(
                                       onPressed: () async {
-                                        if (_signatureController.isNotEmpty) {
-                                          var data = await _signatureController.toPngBytes();
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) {
-                                                return Scaffold(
-                                                  appBar: AppBar(),
-                                                  body: Center(
-                                                      child: Container(
-                                                          color: Colors.grey[300], child: Image.memory(data))),
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        }
+                                        _saveSignature(_signatureController, 'WorkEvaluatorSignature');
                                       },
+                                      child: Text(
+                                        'Save',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
-                                    //CLEAR CANVAS
-                                    IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      color: Colors.white,
+                                    FlatButton(
                                       onPressed: () {
-                                        setState(() => _signatureController.clear());
+                                        _newSignature = SignatureForm(
+                                          signatureName: _intFormId+'-WorkEvaluatorSignature',
+                                          signaturePoints: null,
+                                          signatureImage: null,
+                                          formId: _intFormId,
+                                        );
+                                        SignatureFormDB.update(_intFormId, _newSignature.signatureName, _newSignature);
+                                        setState(() {
+                                          _intWorkSiteEvaluator = _newForm.workSiteEvaluator;
+                                          _intBuilderConfirmation = _newForm.builderConfirmation;
+                                          _intAssessorName = _newForm.assessorName;
+                                          _intDate2 = _newForm.workSiteEvaluatedDate;
+                                          _intDate3 = _newForm.builderConfirmationDate;
+                                          _newForm = InstallationFormEntry(
+                                            formId: _intFormId,
+                                            builderName: _newForm.builderName,
+                                            orderNumber: _newForm.orderNumber,
+                                            address: _newForm.address,
+                                            date: _newForm.date,
+                                            comments: _newForm.comments,
+                                            workSiteEvaluator: _newForm.workSiteEvaluator,
+                                            workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
+                                            builderConfirmation: _newForm.builderConfirmation,
+                                            builderConfirmationDate:
+                                            _newForm.builderConfirmationDate,
+                                            assessorName: _newForm.assessorName,
+                                            status: _newForm.status,
+                                            workerName: _newForm.workerName,
+                                          );
+                                          _signatureController.clear();
+                                        });
                                       },
+                                      child: Text(
+                                        'Clear',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -393,6 +505,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                         _newForm.builderConfirmationDate,
                                     assessorName: _newForm.assessorName,
                                     status: _newForm.status,
+                                    workerName: _newForm.workerName,
                                   );
                                   InstallationFormEntryDB.update(_intFormId, _newForm);
                                 },
@@ -439,6 +552,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                     builderConfirmationDate: value,
                                     assessorName: _newForm.assessorName,
                                     status: _newForm.status,
+                                    workerName: _newForm.workerName,
                                   );
                                 },
                               ),
@@ -470,35 +584,53 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                                   mainAxisSize: MainAxisSize.max,
                                   children: <Widget>[
-                                    //SHOW EXPORTED IMAGE IN NEW ROUTE
-                                    IconButton(
-                                      icon: const Icon(Icons.check),
-                                      color: Colors.white,
+                                    FlatButton(
                                       onPressed: () async {
-                                        if (_signatureController2.isNotEmpty) {
-                                          var data = await _signatureController2.toPngBytes();
-                                          Navigator.of(context).push(
-                                            MaterialPageRoute(
-                                              builder: (BuildContext context) {
-                                                return Scaffold(
-                                                  appBar: AppBar(),
-                                                  body: Center(
-                                                      child: Container(
-                                                          color: Colors.grey[300], child: Image.memory(data))),
-                                                );
-                                              },
-                                            ),
-                                          );
-                                        }
+                                        _saveSignature(_signatureController2, 'BuilderSignature');
                                       },
+                                      child: Text(
+                                        'Save',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
-                                    //CLEAR CANVAS
-                                    IconButton(
-                                      icon: const Icon(Icons.clear),
-                                      color: Colors.white,
+                                    FlatButton(
                                       onPressed: () {
-                                        setState(() => _signatureController2.clear());
+                                        _newSignature2 = SignatureForm(
+                                          signatureName: _intFormId+'-BuilderSignature',
+                                          signaturePoints: null,
+                                          signatureImage: null,
+                                          formId: _intFormId,
+                                        );
+                                        SignatureFormDB.update(_intFormId, _newSignature2.signatureName, _newSignature2);
+                                        setState(() {
+                                          _intWorkSiteEvaluator = _newForm.workSiteEvaluator;
+                                          _intBuilderConfirmation = _newForm.builderConfirmation;
+                                          _intAssessorName = _newForm.assessorName;
+                                          _intDate2 = _newForm.workSiteEvaluatedDate;
+                                          _intDate3 = _newForm.builderConfirmationDate;
+                                          _newForm = InstallationFormEntry(
+                                            formId: _intFormId,
+                                            builderName: _newForm.builderName,
+                                            orderNumber: _newForm.orderNumber,
+                                            address: _newForm.address,
+                                            date: _newForm.date,
+                                            comments: _newForm.comments,
+                                            workSiteEvaluator: _newForm.workSiteEvaluator,
+                                            workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
+                                            builderConfirmation: _newForm.builderConfirmation,
+                                            builderConfirmationDate:
+                                            _newForm.builderConfirmationDate,
+                                            assessorName: _newForm.assessorName,
+                                            status: _newForm.status,
+                                            workerName: _newForm.workerName,
+                                          );
+                                          _signatureController2.clear();
+                                        });
                                       },
+                                      child: Text(
+                                        'Clear',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
                                     ),
                                   ],
                                 ),
@@ -555,6 +687,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                         _newForm.builderConfirmationDate,
                                     assessorName: value,
                                     status: _newForm.status,
+                                    workerName: _newForm.workerName,
                                   );
                                   InstallationFormEntryDB.update(_intFormId, _newForm);
                                 },
@@ -575,10 +708,23 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                       vertical: 16.0),
                                   child: ElevatedButton(
                                     onPressed: () {
+                                      _saveForm();
+                                      final isSigned = _signatureController.isNotEmpty;
+                                      final isSigned2 = _signatureController2.isNotEmpty;
+                                      if(!isSigned || !isSigned2){
+                                        _finalformscaffold.currentState.showSnackBar(snackBar);
+                                      }
                                       final isValid = _form2.currentState.validate();
                                       if(!isValid){
                                         return;
                                       }
+                                      InstallationFormEntryDB.SetDone(_intFormId);
+                                      HazardsDB.SetDone(_intFormId);
+                                      FormImagesDB.SetDone(_intFormId);
+                                      ChecklistDB.SetDone(_intFormId);
+                                      _removeFormId();
+                                      Navigator.popUntil(context, ModalRoute.withName("dashboard"));
+
                                       // Validate returns true if the form is valid, or false
                                       // otherwise.
                                       //if (_formKey.currentState.validate()) {

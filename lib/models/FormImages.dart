@@ -22,6 +22,17 @@ class FormImages {
     this.status,
     this.formId,
   });
+
+  Map<String, dynamic> toMap() {
+    return {
+      'imageName': imageName,
+      'imageData': imageData,
+      'indexnum': indexnum,
+      'status': status,
+      'formId': formId,
+    };
+  }
+
 }
 
 class FormImagesDB {
@@ -31,7 +42,7 @@ class FormImagesDB {
         onCreate: (db, version) {
           db.execute(
               'CREATE TABLE installation_form_signatures('
-                  'signatureId INTEGER AUTOINCREMENT PRIMARY KEY, '
+                  'signatureId INTEGER PRIMARY KEY AUTOINCREMENT, '
                   'signatureName TEXT,'
                   'signaturePoints TEXT,'
                   'signatureImage BLOB,'
@@ -78,7 +89,8 @@ class FormImagesDB {
                   'builderConfirmation TEXT,'
                   'builderConfirmationDate TEXT,'
                   'assessorName TEXT,'
-                  'status TEXT'
+                  'status TEXT,'
+                  'user TEXT'
                   ')');
         }, version: 1);
   }
@@ -102,5 +114,40 @@ class FormImagesDB {
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await FormImagesDB.database();
     return db.query(table);
+  }
+
+  static Future<dynamic> SetDone(String formId) async {
+    final db = await FormImagesDB.database();
+    final getData =  await db.query(
+      'installation_form_images',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+    var dataList = getData.map(
+          (item) => FormImages(
+        imageName: item['imageName'],
+        imageData: item['imageData'],
+        indexnum: item['indexnum'],
+        status: 'Awaiting Upload',
+        formId: item['formId'],
+      ),
+    ).toList();
+    print(dataList);
+    print(dataList.length);
+    for (var i=0; i<dataList.length; i++){
+      var updated = FormImages(
+        imageName: dataList[i].imageName,
+        imageData: dataList[i].imageData,
+        indexnum: dataList[i].indexnum,
+        status: dataList[i].status,
+        formId: dataList[i].formId,
+      );
+      await db.update(
+        'installation_form_images',
+        updated.toMap(),
+        where: "formId = ? and imageName = ?",
+        whereArgs: [formId, dataList[i].imageName],
+      );
+    }
   }
 }
