@@ -7,6 +7,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import './install_form.dart';
 import './widget/entries_list.dart';
 import './login_form.dart';
+import './models/entries.dart';
 import './models/PopUpMenuList.dart';
 import './models/InstallationFormEntry.dart';
 

@@ -14,6 +14,8 @@ import '../install_form.dart';
 import '../models/InstallationFormEntry.dart';
 import '../models/SignatureForm.dart';
 import '../install_form.dart';
+import '../main.dart';
+import '../login_form.dart';
 
 class FinalSubmission extends StatefulWidget {
   @override
@@ -723,7 +725,13 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                       FormImagesDB.SetDone(_intFormId);
                                       ChecklistDB.SetDone(_intFormId);
                                       _removeFormId();
-                                      Navigator.popUntil(context, ModalRoute.withName("dashboard"));
+                                      //Navigator.popUntil(context, ModalRoute.withName("dashboard"));
+                                      //Navigator.pushReplacement(context, MaterialPageRoute(settings: RouteSettings(name: "dashboard"), builder: (BuildContext context) => MyHomePage()));
+                                      Navigator.pushAndRemoveUntil(
+                                        context,
+                                        MaterialPageRoute(builder: (context) => AuthScreen()),
+                                            (Route<dynamic> route) => false,
+                                      );
 
                                       // Validate returns true if the form is valid, or false
                                       // otherwise.

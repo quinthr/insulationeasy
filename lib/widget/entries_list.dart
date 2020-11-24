@@ -49,7 +49,7 @@ class _EntryListState extends State<EntryList> {
   void initState() {
     super.initState();
   }
-  _EntryListState() {
+  void updateList() {
     fetchFormEntries().then((val) => setState(() {
       if(val.isEmpty){
         print('There are currently no entries.');
@@ -69,6 +69,10 @@ class _EntryListState extends State<EntryList> {
       entries = entryList;
     }));
   }
+  _EntryListState() {
+    updateList();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container (

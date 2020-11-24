@@ -99,8 +99,8 @@ class _AuthCardState extends State<AuthCard> {
 
   Future<dynamic> _fetchAndSetUser() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    InstallationFormEntryDB.deleteDB();
+    //await prefs.clear();
+    //InstallationFormEntryDB.deleteDB();
     final _newWorkerName = prefs.getString('workerName');
     print(_newWorkerName);
     if (_newWorkerName == null) {
@@ -126,7 +126,7 @@ class _AuthCardState extends State<AuthCard> {
         print('Set to True');
         _isLoading = false;
       } else {
-        Future.delayed(const Duration(seconds: 5), () {
+        Future.delayed(const Duration(seconds: 2), () {
           Navigator.pushReplacement(
               context,
               MaterialPageRoute(
