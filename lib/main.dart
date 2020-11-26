@@ -40,6 +40,13 @@ void newAction(String choice, BuildContext context) {
         }),
             (Route route) => false);
   }
+  if (choice == PopUpMenuList.Refresh) {
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => AuthScreen()),
+          (Route<dynamic> route) => false,
+    );
+  }
 }
 
 class MyApp extends StatelessWidget {
