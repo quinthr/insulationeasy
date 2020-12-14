@@ -124,6 +124,7 @@ class ChecklistDB {
     );
   }
 
+
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await ChecklistDB.database();
     return db.query(table);
@@ -141,6 +142,38 @@ class ChecklistDB {
         check_id: item['check_id'],
         text: item['text'],
         status: 'Awaiting Upload',
+        formId: item['formId'],
+      ),
+    ).toList();
+    print(dataList);
+    print(dataList.length);
+    for (var i=0; i<dataList.length; i++){
+      var updated = Checklist(
+        check_id: dataList[i].check_id,
+        text: dataList[i].text,
+        status: dataList[i].status,
+        formId: dataList[i].formId,
+      );
+      await db.update(
+        'installation_form_checklist',
+        updated.toMap(),
+        where: "formId = ? and text = ?",
+        whereArgs: [formId, dataList[i].text],
+      );
+    }
+  }
+  static Future<dynamic> SetUploaded(String formId) async {
+    final db = await ChecklistDB.database();
+    final getData =  await db.query(
+      'installation_form_checklist',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+    var dataList = getData.map(
+          (item) => Checklist(
+        check_id: item['check_id'],
+        text: item['text'],
+        status: 'Done',
         formId: item['formId'],
       ),
     ).toList();

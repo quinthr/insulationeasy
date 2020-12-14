@@ -150,4 +150,38 @@ class FormImagesDB {
       );
     }
   }
+  static Future<dynamic> SetUploaded(String formId) async {
+    final db = await FormImagesDB.database();
+    final getData =  await db.query(
+      'installation_form_images',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+    var dataList = getData.map(
+          (item) => FormImages(
+        imageName: item['imageName'],
+        imageData: item['imageData'],
+        indexnum: item['indexnum'],
+        status: 'Done',
+        formId: item['formId'],
+      ),
+    ).toList();
+    print(dataList);
+    print(dataList.length);
+    for (var i=0; i<dataList.length; i++){
+      var updated = FormImages(
+        imageName: dataList[i].imageName,
+        imageData: dataList[i].imageData,
+        indexnum: dataList[i].indexnum,
+        status: dataList[i].status,
+        formId: dataList[i].formId,
+      );
+      await db.update(
+        'installation_form_images',
+        updated.toMap(),
+        where: "formId = ? and imageName = ?",
+        whereArgs: [formId, dataList[i].imageName],
+      );
+    }
+  }
 }

@@ -106,6 +106,15 @@ class SignatureFormDB {
     );
   }
 
+  static Future<dynamic> getAll(String formId) async {
+    final db = await SignatureFormDB.database();
+    return await db.query(
+      'installation_form_signatures',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+  }
+
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await SignatureFormDB.database();
     return db.query(table);

@@ -60,6 +60,7 @@ class InstallationFormEntry {
 class InstallationFormEntryDB {
   static Future<Database> database() async {
     final dbPath = await sql.getDatabasesPath();
+    print("DATABASE PATH:"+dbPath.toString());
     String test = path.join(dbPath, 'inseasy-installform.db');
     //await sql.deleteDatabase(test);
     return sql.openDatabase(path.join(dbPath, 'inseasy-installform.db'),
@@ -130,11 +131,32 @@ class InstallationFormEntryDB {
     );
   }
 
+  static Future<dynamic> getAllFormId() async {
+    final db = await InstallationFormEntryDB.database();
+    final List<Map<String, dynamic>> maps = await db.query('installation_form_entry',
+      where: "status = ?",
+      whereArgs: ['Done'],
+    );
+    return List.generate(maps.length, (i) {
+      return InstallationFormEntry(
+        formId: maps[i]['formId'],
+      );
+    });
+  }
+
   static Future<List<Map<String, dynamic>>> getData(String table) async {
     final db = await InstallationFormEntryDB.database();
     return db.query(table,
     where: "status = ? or status = ?",
     whereArgs: ['Awaiting Upload', 'Done'],
+    );
+  }
+
+  static Future<List<Map<String, dynamic>>> getUploadData(String table) async {
+    final db = await InstallationFormEntryDB.database();
+    return db.query(table,
+      where: "status = ?",
+      whereArgs: ['Awaiting Upload'],
     );
   }
 
@@ -185,6 +207,50 @@ class InstallationFormEntryDB {
             workerName: item['workerName'],
           ),
         )
+        .toList();
+    var updated = InstallationFormEntry(
+        formId: dataList[0].formId,
+        builderName: dataList[0].builderName,
+        address: dataList[0].address,
+        orderNumber: dataList[0].orderNumber,
+        date: dataList[0].date,
+        comments: dataList[0].comments,
+        workSiteEvaluator: dataList[0].workSiteEvaluator,
+        workSiteEvaluatedDate: dataList[0].workSiteEvaluatedDate,
+        builderConfirmation: dataList[0].builderConfirmation,
+        builderConfirmationDate: dataList[0].builderConfirmationDate,
+        assessorName: dataList[0].assessorName,
+        status: dataList[0].status,
+        workerName: dataList[0].workerName);
+    return await db.update(
+      'installation_form_entry',
+      updated.toMap(),
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+  }
+  static Future<dynamic> SetUploaded(String formId) async {
+    final db = await InstallationFormEntryDB.database();
+    final getData = await db.query('installation_form_entry',
+        where: "formId = ?", whereArgs: [formId], limit: 1);
+    var dataList = getData
+        .map(
+          (item) => InstallationFormEntry(
+        formId: item['formId'],
+        builderName: item['builderName'],
+        address: item['address'],
+        orderNumber: item['orderNumber'],
+        date: item['date'],
+        comments: item['comments'],
+        workSiteEvaluator: item['workSiteEvaluator'],
+        workSiteEvaluatedDate: item['workSiteEvaluatedDate'],
+        builderConfirmation: item['builderConfirmation'],
+        builderConfirmationDate: item['builderConfirmationDate'],
+        assessorName: item['assessorName'],
+        status: 'Done',
+        workerName: item['workerName'],
+      ),
+    )
         .toList();
     var updated = InstallationFormEntry(
         formId: dataList[0].formId,

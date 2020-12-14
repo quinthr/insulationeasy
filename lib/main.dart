@@ -1,7 +1,18 @@
+import 'dart:convert';
+import 'dart:async';
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_app/models/Checklist.dart';
+import 'package:mobile_app/models/FormImages.dart';
+import 'package:mobile_app/models/Hazards.dart';
+import 'package:mobile_app/models/SignatureForm.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:path_provider/path_provider.dart';
+
 
 
 import './install_form.dart';
@@ -18,6 +29,160 @@ void main() {
 Future<String> _removeUser() async {
   final prefs = await SharedPreferences.getInstance();
   prefs.remove('workerName');
+}
+
+Future<String> uploadChecklist(String formId) async {
+  var dataList = await ChecklistDB.getAll(formId);
+  const url = 'http://10.0.2.2:8270/api/checklist/upload';
+  for(var i=0; i<dataList.length; i++){
+    var checklist = json.encode({
+      'text': dataList[i]['text'],
+      'status':'Done',
+      'formId': formId,
+    });
+    http.post(url, body: checklist, headers: {
+      "Content-Type": "application/json"});
+    ChecklistDB.SetUploaded(dataList[i]['formId']);
+  }
+}
+
+Future<String> uploadImage(String formId) async {
+  var dataList = await FormImagesDB.getAll(formId);
+  const url = 'http://10.0.2.2:8270/api/image/upload';
+  for(var i=0; i<dataList.length; i++){
+    var encodeItem;
+    if(dataList[i]['imageData'].toString() == 'null'){
+      encodeItem = null;
+    }
+    else {
+      final tempDir = await getTemporaryDirectory();
+      final file = await new File('${tempDir.path}/'+dataList[i]['imageName']).create();
+      file.writeAsBytesSync(dataList[i]['imageData']);
+      encodeItem = base64Encode(file.readAsBytesSync());
+    }
+    var image = json.encode({
+      'imageName': dataList[i]['imageName'],
+      'imageData': encodeItem,
+      'indexnum': dataList[i]['indexnum'],
+      'status':'Done',
+      'formId': dataList[i]['formId'],
+    });
+    http.post(url, body: image, headers: {
+      "Content-Type": "application/json"});
+    FormImagesDB.SetUploaded(dataList[i]['formId']);
+  }
+}
+
+Future<String> uploadHazards(String formId) async {
+  var dataList = await HazardsDB.getAll(formId);
+  const url = 'http://10.0.2.2:8270/api/hazard/upload';
+  for(var i=0; i<dataList.length; i++){
+    var hazards = json.encode({
+      'hazardName': dataList[i]['hazardName'],
+      'probability': dataList[i]['probability'],
+      'consequence': dataList[i]['consequence'],
+      'risk': dataList[i]['risk'],
+      'controlMeasure': dataList[i]['controlMeasure'],
+      'person': dataList[i]['person'],
+      'status':'Done',
+      'formId': formId,
+    });
+    http.post(url, body: hazards, headers: {
+      "Content-Type": "application/json"});
+    HazardsDB.SetUploaded(dataList[i]['formId']);
+  }
+}
+
+Future<String> uploadSignature(String formId) async {
+  var dataList = await SignatureFormDB.getAll(formId);
+  const url = 'http://10.0.2.2:8270/api/signature/upload';
+  for(var i=0; i<dataList.length; i++){
+    final tempDir = await getTemporaryDirectory();
+    final file = await new File('${tempDir.path}/'+dataList[i]['signatureName']).create();
+    file.writeAsBytesSync(dataList[i]['signatureImage']);
+    var encodeItem = base64Encode(file.readAsBytesSync());
+    var signatures = json.encode({
+      'signatureName': dataList[i]['signatureName'],
+      'signaturePoints': dataList[i]['signaturePoints'],
+      'signatureImage': encodeItem,
+      'formId': formId,
+    });
+    http.post(url, body: signatures, headers: {
+      "Content-Type": "application/json"});
+  }
+}
+
+Future<dynamic> uploadFormEntries() async{
+  var dataList = await InstallationFormEntryDB.getUploadData('installation_form_entry');
+  const url = 'http://10.0.2.2:8270/api/entry/upload';
+  for(var i=0; i<dataList.length; i++){
+    var entry = json.encode({
+      'formId': dataList[i]['formId'],
+      'orderNumber': dataList[i]['orderNumber'],
+      'builderName':dataList[i]['builderName'],
+      'address': dataList[i]['address'],
+      'date': dataList[i]['date'],
+      'comments': dataList[i]['comments'],
+      'workSiteEvaluator': dataList[i]['workSiteEvaluator'],
+      'workSiteEvaluatedDate': dataList[i]['workSiteEvaluatedDate'],
+      'builderConfirmation': dataList[i]['builderConfirmation'],
+      'builderConfirmationDate': dataList[i]['builderConfirmationDate'],
+      'assessorName': dataList[i]['assessorName'],
+      'status': dataList[i]['status'],
+      'workerName': dataList[i]['workerName'],
+    });
+    http.post(url, body: entry, headers: {
+    "Content-Type": "application/json"});
+    InstallationFormEntryDB.SetUploaded(dataList[i]['formId']);
+    uploadChecklist(dataList[i]['formId']);
+    uploadImage(dataList[i]['formId']);
+    uploadHazards(dataList[i]['formId']);
+    uploadSignature(dataList[i]['formId']);
+  }
+  return 0;
+}
+
+Future<dynamic> updateFormEntries() async{
+  var dataList = await InstallationFormEntryDB.getAllFormId();
+  List<String> formIdList = new List();
+  const url = 'http://10.0.2.2:8270/api/update/entries';
+  print("DATALIST");
+  print(dataList[0].formId);
+  for(var i=0; i<dataList.length; i++){
+    formIdList.add(dataList[i].formId);
+  }
+  var encoded = json.encode({
+    'entries': formIdList
+  });
+  print('ENTRIES: '+ formIdList.toString());
+  var response = await http.post(url, body: encoded, headers: {
+    "Content-Type": "application/json"});
+  if (response.statusCode == 200) {
+    // If the server did return a 200 OK response,
+    // then parse the JSON.
+    var newEntries = jsonDecode(response.body);
+    for(var i=0; i<newEntries['entries'].length; i++){
+      InstallationFormEntryDB.insert('installation_form_entry', {
+        'formId': newEntries['entries'][i]['formId'],
+        'orderNumber': newEntries['entries'][i]['orderNumber'],
+        'builderName': newEntries['entries'][i]['builderName'],
+        'address': newEntries['entries'][i]['address'],
+        'date': newEntries['entries'][i]['date'],
+        'comments': newEntries['entries'][i]['comments'],
+        'workSiteEvaluator': newEntries['entries'][i]['workSiteEvaluator'],
+        'workSiteEvaluatedDate': newEntries['entries'][i]['workSiteEvaluatedDate'],
+        'builderConfirmation': newEntries['entries'][i]['builderConfirmation'],
+        'builderConfirmationDate': newEntries['entries'][i]['builderConfirmationDate'],
+        'assessorName': newEntries['entries'][i]['assessorName'],
+        'status': newEntries['entries'][i]['status'],
+        'workerName': newEntries['entries'][i]['workerName'],
+      });
+    }
+  } else {
+    // If the server did not return a 200 OK response,
+    // then throw an exception.
+    throw Exception('Failed to load album');
+  }
 }
 
 void newAction(String choice, BuildContext context) {
@@ -100,6 +265,8 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   _MyHomePageState() {
     generateFormId();
+    uploadFormEntries();
+    updateFormEntries();
   }
   @override
   Widget build(BuildContext context) {

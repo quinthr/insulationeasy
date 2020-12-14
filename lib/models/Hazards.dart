@@ -111,6 +111,16 @@ class HazardsDB {
       conflictAlgorithm: ConflictAlgorithm.replace,
     );
   }
+
+  static Future<dynamic> getAll(String formId) async {
+    final db = await HazardsDB.database();
+    return await db.query(
+      'installation_form_hazards',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+  }
+
   static Future<dynamic> getOneFormData (String formId, String hazardName) async {
     final db = await HazardsDB.database();
     return await db.query(
@@ -144,6 +154,49 @@ class HazardsDB {
             person: item['person'],
             status: 'Awaiting Upload',
             formId: item['formId'],
+      ),
+    ).toList();
+    print(dataList);
+    print(dataList.length);
+    for (var i=0; i<dataList.length; i++){
+      var updated = Hazards(
+        hazardId: dataList[i].hazardId,
+        hazardName: dataList[i].hazardName,
+        probability: dataList[i].probability,
+        consequence: dataList[i].consequence,
+        risk: dataList[i].risk,
+        controlMeasure: dataList[i].controlMeasure,
+        person: dataList[i].person,
+        status: dataList[i].status,
+        formId: dataList[i].formId,
+      );
+      await db.update(
+        'installation_form_hazards',
+        updated.toMap(),
+        where: "formId = ? and hazardName = ?",
+        whereArgs: [formId, dataList[i].hazardName],
+      );
+    }
+  }
+
+  static Future<dynamic> SetUploaded(String formId) async {
+    final db = await HazardsDB.database();
+    final getData =  await db.query(
+      'installation_form_hazards',
+      where: "formId = ?",
+      whereArgs: [formId],
+    );
+    var dataList = getData.map(
+          (item) => Hazards(
+        hazardId: item['hazardId'],
+        hazardName: item['hazardName'],
+        probability: item['probability'],
+        consequence: item['consequence'],
+        risk: item['risk'],
+        controlMeasure: item['controlMeasure'],
+        person: item['person'],
+        status: 'Done',
+        formId: item['formId'],
       ),
     ).toList();
     print(dataList);
