@@ -19,9 +19,9 @@ import 'package:path_provider/path_provider.dart';
 import './install_form.dart';
 import './widget/entries_list.dart';
 import './login_form.dart';
-import './models/entries.dart';
 import './models/PopUpMenuList.dart';
 import './models/InstallationFormEntry.dart';
+import './widget/checklist_form_before.dart';
 
 void main() {
   runApp(MyApp());
@@ -35,7 +35,7 @@ Future<String> _removeUser() async {
 Future<String> uploadChecklist(String formId) async {
   var dataList = await ChecklistDB.getAll(formId);
   //http://10.0.2.2:8270/api
-  const url = 'http://10.0.2.2:8270/api/checklist/upload';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/checklist/upload';
   for(var i=0; i<dataList.length; i++){
     var checklist = json.encode({
       'text': dataList[i]['text'],
@@ -51,7 +51,7 @@ Future<String> uploadChecklist(String formId) async {
 
 Future<String> uploadImage(String formId) async {
   var dataList = await FormImagesDB.getAll(formId);
-  const url = 'http://10.0.2.2:8270/api/image/upload';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/image/upload';
   for(var i=0; i<dataList.length; i++){
     var encodeItem;
     if(dataList[i]['imageData'].toString() == 'null'){
@@ -79,7 +79,7 @@ Future<String> uploadImage(String formId) async {
 
 Future<String> uploadHazards(String formId) async {
   var dataList = await HazardsDB.getAll(formId);
-  const url = 'http://10.0.2.2:8270/api/hazard/upload';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/hazard/upload';
   for(var i=0; i<dataList.length; i++){
     var hazards = json.encode({
       'hazardName': dataList[i]['hazardName'],
@@ -100,7 +100,7 @@ Future<String> uploadHazards(String formId) async {
 
 Future<String> uploadSignature(String formId) async {
   var dataList = await SignatureFormDB.getAll(formId);
-  const url = 'http://10.0.2.2:8270/api/signature/upload';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/signature/upload';
   for(var i=0; i<dataList.length; i++){
     final tempDir = await getTemporaryDirectory();
     final file = await new File('${tempDir.path}/'+dataList[i]['signatureName']).create();
@@ -119,7 +119,7 @@ Future<String> uploadSignature(String formId) async {
 }
 
 Future<String> sendToEmail(String formId) async {
-  const url = 'http://10.0.2.2:8270/api/send/email';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/send/email';
   var form = json.encode({'formId': formId});
     await http.post(url, body: form, headers: {
       "x-access-token": "SW5zdWxhdGlvbkVhc3lBdXN0cmFsaWEmU291bmRwcm9vZmluZ1Byb2R1Y3RzQXVzdHJhbGlh",
@@ -128,7 +128,7 @@ Future<String> sendToEmail(String formId) async {
 
 Future<dynamic> uploadFormEntries() async{
   var dataList = await InstallationFormEntryDB.getUploadData('installation_form_entry');
-  const url = 'http://10.0.2.2:8270/api/entry/upload';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/entry/upload';
   for(var i=0; i<dataList.length; i++){
     var entry = json.encode({
       'formId': dataList[i]['formId'],
@@ -163,7 +163,7 @@ Future<dynamic> uploadFormEntries() async{
 Future<dynamic> updateFormEntries() async{
   var dataList = await InstallationFormEntryDB.getAllFormId();
   List<String> formIdList = new List();
-  const url = 'http://10.0.2.2:8270/api/update/entries';
+  const url = 'http://insulation-form-api.insulationeasy.com.au/insulationeasy-form-app/api/update/entries';
   for(var i=0; i<dataList.length; i++){
     formIdList.add(dataList[i].formId);
   }
@@ -370,7 +370,7 @@ class _MyHomePageState extends State<MyHomePage> {
           Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => InstallForm()),
+                builder: (context) => ChecklistFormBefore()),
           );
         },
         child: Icon(Icons.add, color: Colors.white),

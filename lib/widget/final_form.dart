@@ -51,6 +51,8 @@ Future<String> _removeFormId() async {
 
 class _FinalSubmissionState extends State<FinalSubmission> {
   final _form2 = GlobalKey<FormState>();
+  FocusNode focusNodeBuilder;
+  FocusNode focusNodeEvaluator;
   final GlobalKey<ScaffoldState> _finalformscaffold = new GlobalKey<ScaffoldState>();
   DateTime selectedDate2 = DateTime.now();
   DateTime selectedDate3 = DateTime.now();
@@ -60,10 +62,10 @@ class _FinalSubmissionState extends State<FinalSubmission> {
   String _intWorkSiteEvaluator = '';
   String _intBuilderConfirmation = '';
   String _intAssessorName = '';
-  String _intDate2 = '';
-  String _intDate3 = '';
+  String _intDate2 = "${DateTime.now()}".split(' ')[0];
+  String _intDate3 = "${DateTime.now()}".split(' ')[0];
   String _intUser = '';
-  final snackBar = SnackBar(content: Text('Please enter your signature.'));
+  final snackBar = SnackBar(content: Text('Please enter your signature.'), duration: Duration(seconds: 2),);
   var _signatureController = SignatureController(
     penStrokeWidth: 5,
     penColor: Colors.black,
@@ -84,9 +86,9 @@ class _FinalSubmissionState extends State<FinalSubmission> {
     date: null,
     comments: '',
     workSiteEvaluator: '',
-    workSiteEvaluatedDate: null,
+    workSiteEvaluatedDate: "${DateTime.now()}".split(' ')[0],
     builderConfirmation: '',
-    builderConfirmationDate: null,
+    builderConfirmationDate: "${DateTime.now()}".split(' ')[0],
     assessorName: '',
     status: '',
     workerName: '',
@@ -119,6 +121,12 @@ class _FinalSubmissionState extends State<FinalSubmission> {
       SignatureFormDB.update(_intFormId, _newSignature.signatureName, _newSignature);
     }
   }
+  @override
+  void initState() {
+    super.initState();
+    focusNodeBuilder = FocusNode();
+    focusNodeEvaluator = FocusNode();
+  }
   _FinalSubmissionState() {
     fetchFormData().then((val) => setState(() {
       _newForm = InstallationFormEntry(
@@ -130,12 +138,10 @@ class _FinalSubmissionState extends State<FinalSubmission> {
         comments: checkifEmpty(val[0].comments.toString()),
         workSiteEvaluator:
         checkifEmpty(val[0].workSiteEvaluator.toString()),
-        workSiteEvaluatedDate:
-        checkifEmpty(val[0].workSiteEvaluatedDate.toString()),
+        workSiteEvaluatedDate: "${DateTime.now()}".split(' ')[0],
         builderConfirmation:
         checkifEmpty(val[0].builderConfirmation.toString()),
-        builderConfirmationDate:
-        checkifEmpty(val[0].builderConfirmationDate.toString()),
+        builderConfirmationDate: "${DateTime.now()}".split(' ')[0],
         assessorName: checkifEmpty(val[0].assessorName.toString()),
         status: checkifEmpty(val[0].status.toString()),
         workerName: val[0].workerName.toString(),
@@ -147,8 +153,6 @@ class _FinalSubmissionState extends State<FinalSubmission> {
       _intBuilderConfirmation =
           checkifEmpty(val[0].builderConfirmation.toString());
       _intAssessorName = checkifEmpty(val[0].assessorName.toString());
-      _intDate2 = checkifEmpty(val[0].workSiteEvaluatedDate.toString());
-      _intDate3 = checkifEmpty(val[0].builderConfirmationDate.toString());
       _intUser = val[0].workerName.toString();
       dateController2.text = _intDate2;
       dateController3.text = _intDate3;
@@ -174,69 +178,13 @@ class _FinalSubmissionState extends State<FinalSubmission> {
       _signatureController2.points=asPoints;
     }));
   }
+  @override
+  void dispose() {
+    // Clean up the focus node when the Form is disposed.
+    focusNodeEvaluator.dispose();
+    focusNodeBuilder.dispose();
 
-  Future<void> _selectDate2(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate2,
-        firstDate: DateTime(2020),
-        lastDate: DateTime.now());
-    if (picked != null && picked != selectedDate2)
-      setState(() {
-        selectedDate2 = picked;
-        dateController2.text = "${selectedDate2}".split(' ')[0];
-        _intWorkSiteEvaluator = _newForm.workSiteEvaluator;
-        _intBuilderConfirmation = _newForm.builderConfirmation;
-        _intAssessorName = _newForm.assessorName;
-        _newForm = InstallationFormEntry(
-          formId: _intFormId,
-          builderName: _newForm.builderName,
-          orderNumber: _newForm.orderNumber,
-          address: _newForm.address,
-          date: _newForm.date,
-          comments: _newForm.comments,
-          workSiteEvaluator: _newForm.workSiteEvaluator,
-          workSiteEvaluatedDate: "${selectedDate2}".split(' ')[0],
-          builderConfirmation: _newForm.builderConfirmation,
-          builderConfirmationDate: _newForm.builderConfirmationDate,
-          assessorName: _newForm.assessorName,
-          status: _newForm.status,
-          workerName: _intUser,
-        );
-        InstallationFormEntryDB.update(_intFormId, _newForm);
-      });
-  }
-
-  Future<void> _selectDate3(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate3,
-        firstDate: DateTime(2020),
-        lastDate: DateTime.now());
-    if (picked != null && picked != selectedDate3)
-      setState(() {
-        selectedDate3 = picked;
-        dateController3.text = "${selectedDate3}".split(' ')[0];
-        _intWorkSiteEvaluator = _newForm.workSiteEvaluator;
-        _intBuilderConfirmation = _newForm.builderConfirmation;
-        _intAssessorName = _newForm.assessorName;
-        _newForm = InstallationFormEntry(
-          formId: _intFormId,
-          builderName: _newForm.builderName,
-          orderNumber: _newForm.orderNumber,
-          address: _newForm.address,
-          date: _newForm.date,
-          comments: _newForm.comments,
-          workSiteEvaluator: _newForm.workSiteEvaluator,
-          workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-          builderConfirmation: _newForm.builderConfirmation,
-          builderConfirmationDate: "${selectedDate3}".split(' ')[0],
-          assessorName: _newForm.assessorName,
-          status: _newForm.status,
-          workerName: _intUser,
-        );
-        InstallationFormEntryDB.update(_intFormId, _newForm);
-      });
+    super.dispose();
   }
 
   void _saveForm() {
@@ -259,7 +207,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
             Container(
               alignment: Alignment.center,
               padding: EdgeInsets.only(right: 5),
-              child: Text("4/4",
+              child: Text("6/6",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -286,6 +234,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                             height: 20.0,
                           ),
                           TextFormField(
+                            focusNode: focusNodeEvaluator,
                             decoration: InputDecoration(
                               labelText: 'Work site evaluated by',
                               contentPadding: EdgeInsets.all(3),
@@ -378,12 +327,6 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                               );
                             },
                           ),
-                          FlatButton(
-                            child: Text(
-                              'Choose Date',
-                            ),
-                            onPressed: () => _selectDate2(context),
-                          ),
                           SizedBox(
                             height: 20.0,
                           ),
@@ -394,10 +337,35 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                               fontSize: 16,
                             ),
                           ),
-                          Signature(
-                            controller: _signatureController,
-                            height: 300,
-                            backgroundColor: Colors.white,
+                          new GestureDetector(
+                              onLongPress: () {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onHorizontalDragStart: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onVerticalDragDown: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onVerticalDragStart: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onTap: () {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              child: new Container(
+                                child: Signature(
+                                  controller: _signatureController,
+                                  height: 300,
+                                  backgroundColor: Colors.white,
+                                ),
+                                //rest of your code write here
+                              )
                           ),
                           //OK AND CLEAR BUTTONS
                           Container(
@@ -409,6 +377,8 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                 //SHOW EXPORTED IMAGE IN NEW ROUTE
                                 FlatButton(
                                   onPressed: () async {
+                                    focusNodeEvaluator.unfocus();
+                                    focusNodeBuilder.unfocus();
                                     _saveSignature(_signatureController, 'WorkEvaluatorSignature');
                                   },
                                   child: Text(
@@ -418,6 +388,8 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                 ),
                                 FlatButton(
                                   onPressed: () {
+                                    focusNodeEvaluator.unfocus();
+                                    focusNodeBuilder.unfocus();
                                     _newSignature = SignatureForm(
                                       signatureName: _intFormId+'-WorkEvaluatorSignature',
                                       signaturePoints: null,
@@ -472,6 +444,7 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                             height: 20.0,
                           ),
                           TextFormField(
+                            focusNode: focusNodeBuilder,
                             decoration: InputDecoration(
                               labelText: 'Builder\'s Confirmation',
                               contentPadding: EdgeInsets.all(3),
@@ -562,12 +535,6 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                               );
                             },
                           ),
-                          FlatButton(
-                            child: Text(
-                              'Choose Date',
-                            ),
-                            onPressed: () => _selectDate3(context),
-                          ),
                           SizedBox(
                             height: 20.0,
                           ),
@@ -578,10 +545,35 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                               fontSize: 16,
                             ),
                           ),
-                          Signature(
-                            controller: _signatureController2,
-                            height: 300,
-                            backgroundColor: Colors.white,
+                          new GestureDetector(
+                              onLongPress: () {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onHorizontalDragStart: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onVerticalDragDown: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onVerticalDragStart: (_) {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              onTap: () {
+                                focusNodeEvaluator.unfocus();
+                                focusNodeBuilder.unfocus();
+                              },
+                              child: new Container(
+                                child: Signature(
+                                  controller: _signatureController2,
+                                  height: 300,
+                                  backgroundColor: Colors.white,
+                                ),
+                                //rest of your code write here
+                              )
                           ),
                           //OK AND CLEAR BUTTONS
                           Container(
@@ -592,6 +584,8 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                               children: <Widget>[
                                 FlatButton(
                                   onPressed: () async {
+                                    focusNodeEvaluator.unfocus();
+                                    focusNodeBuilder.unfocus();
                                     _saveSignature(_signatureController2, 'BuilderSignature');
                                   },
                                   child: Text(
@@ -601,6 +595,8 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                 ),
                                 FlatButton(
                                   onPressed: () {
+                                    focusNodeEvaluator.unfocus();
+                                    focusNodeBuilder.unfocus();
                                     _newSignature2 = SignatureForm(
                                       signatureName: _intFormId+'-BuilderSignature',
                                       signaturePoints: null,
@@ -642,69 +638,6 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                             ),
                           ),
                           SizedBox(
-                            height: 20.0,
-                          ),
-                          const Divider(
-                            height: 20,
-                            thickness: 5,
-                            indent: 0,
-                            endIndent: 0,
-                            color: Colors.black12,
-                          ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          TextFormField(
-                            decoration: InputDecoration(
-                              labelText: 'Assessor\'s Name',
-                              contentPadding: EdgeInsets.all(3),
-                              border: OutlineInputBorder(),
-                            ),
-                            textInputAction: TextInputAction.next,
-                            keyboardType: TextInputType.text,
-                            onChanged: (_) {
-                              _saveForm();
-                            },
-                            initialValue: _intAssessorName,
-                            validator: (value) {
-                              if(value.isEmpty){
-                                return 'Please enter the assessor\'s name';
-                              }
-                              else{
-                                return null;
-                              }
-                            },
-                            onSaved: (value) {
-                              _newForm = InstallationFormEntry(
-                                id: _newForm.id,
-                                formId: _newForm.formId,
-                                builderName: _newForm.builderName,
-                                orderNumber: _newForm.orderNumber,
-                                address: _newForm.address,
-                                date: _newForm.date,
-                                comments: _newForm.comments,
-                                workSiteEvaluator:
-                                _newForm.workSiteEvaluator,
-                                workSiteEvaluatedDate:
-                                _newForm.workSiteEvaluatedDate,
-                                builderConfirmation:
-                                _newForm.builderConfirmation,
-                                builderConfirmationDate:
-                                _newForm.builderConfirmationDate,
-                                assessorName: value,
-                                status: _newForm.status,
-                                workerName: _newForm.workerName,
-                              );
-                              InstallationFormEntryDB.update(_intFormId, _newForm);
-                            },
-                          ),
-                          SizedBox(
-                            height: 10.0,
-                          ),
-                          SizedBox(
-                            height: 20.0,
-                          ),
-                          SizedBox(
                             height: 10.0,
                           ),
                           Container(
@@ -714,6 +647,8 @@ class _FinalSubmissionState extends State<FinalSubmission> {
                                   vertical: 16.0),
                               child: ElevatedButton(
                                 onPressed: () {
+                                  focusNodeEvaluator.unfocus();
+                                  focusNodeBuilder.unfocus();
                                   _saveForm();
                                   final isSigned = _signatureController.isNotEmpty;
                                   final isSigned2 = _signatureController2.isNotEmpty;

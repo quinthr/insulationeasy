@@ -148,6 +148,7 @@ class InstallationFormEntryDB {
     return db.query(table,
     where: "status = ? or status = ?",
     whereArgs: ['Awaiting Upload', 'Done'],
+    orderBy: "date DESC",
     );
   }
 

@@ -1,6 +1,8 @@
 import 'dart:math';
 import 'package:flutter/services.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_app/widget/checklist_form_before.dart';
+import 'package:mobile_app/widget/final_form.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 
@@ -9,7 +11,7 @@ import './models/InstallationFormEntry.dart';
 import './models/FormImages.dart';
 import './models/Hazards.dart';
 import './models/SignatureForm.dart';
-import './widget/checklist_form.dart';
+import './widget/checklist_form_before.dart';
 
 
 class InstallForm extends StatefulWidget {
@@ -137,14 +139,14 @@ class _InstallFormState extends State<InstallForm> {
   String _intBuilderName = '';
   String _intOrderNumber = '';
   String _intAddress = '';
-  String _intDate = '';
+  String _intDate = "${DateTime.now()}".split(' ')[0];
   String _intWorkerName = '';
   var _newForm = InstallationFormEntry(
     formId: '',
     builderName: '',
     orderNumber: '',
     address: '',
-    date: '',
+    date: "${DateTime.now()}".split(' ')[0],
     comments: '',
     workSiteEvaluator: '',
     workSiteEvaluatedDate: '',
@@ -165,7 +167,7 @@ class _InstallFormState extends State<InstallForm> {
         builderName: checkifEmpty(val[0].builderName.toString()),
         orderNumber: checkifEmpty(val[0].orderNumber.toString()),
         address: checkifEmpty(val[0].address.toString()),
-        date: checkifEmpty(val[0].date.toString()),
+        date: "${DateTime.now()}".split(' ')[0],
         comments: checkifEmpty(val[0].comments.toString()),
         workSiteEvaluator: checkifEmpty(val[0].workSiteEvaluator.toString()),
         workSiteEvaluatedDate: checkifEmpty(val[0].workSiteEvaluatedDate.toString()),
@@ -179,7 +181,6 @@ class _InstallFormState extends State<InstallForm> {
       _intBuilderName = checkifEmpty(val[0].builderName.toString());
       _intOrderNumber = checkifEmpty(val[0].orderNumber.toString());
       _intAddress = checkifEmpty(val[0].address.toString());
-      _intDate = checkifEmpty(val[0].date.toString());
       _intWorkerName = val[0].workerName.toString();
       dateController.text = _intDate;
       selectedDate = DateTime.parse(_intDate);
@@ -190,40 +191,6 @@ class _InstallFormState extends State<InstallForm> {
         updateFormEntries();
       }
     }));
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime picked = await showDatePicker(
-        context: context,
-        initialDate: selectedDate,
-        firstDate: DateTime(2020),
-        lastDate: DateTime.now());
-    if (picked != null && picked != selectedDate) {
-      setState(() {
-        selectedDate = picked;
-        dateController.text = "${selectedDate}".split(' ')[0];
-        _intBuilderName = _newForm.builderName;
-        _intOrderNumber = _newForm.orderNumber;
-        _intAddress = _newForm.address;
-        _newForm = InstallationFormEntry(
-          formId: _intFormId,
-          builderName: _newForm.builderName,
-          orderNumber: _newForm.orderNumber,
-          address: _newForm.address,
-          date: "${selectedDate}".split(' ')[0],
-          comments: _newForm.comments,
-          workSiteEvaluator: _newForm.workSiteEvaluator,
-          workSiteEvaluatedDate: _newForm.workSiteEvaluatedDate,
-          builderConfirmation: _newForm.builderConfirmation,
-          builderConfirmationDate:
-          _newForm.builderConfirmationDate,
-          assessorName: _newForm.assessorName,
-          status: _newForm.status,
-          workerName: _intWorkerName,
-        );
-        InstallationFormEntryDB.update(_intFormId, _newForm);
-      });
-    }
   }
 
   void _saveForm() {
@@ -244,7 +211,7 @@ class _InstallFormState extends State<InstallForm> {
             Container(
               alignment: Alignment.center,
               padding: EdgeInsets.only(right: 5),
-              child: Text("1/4",
+              child: Text("5/6",
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: 16,
@@ -437,12 +404,6 @@ class _InstallFormState extends State<InstallForm> {
                             InstallationFormEntryDB.update(_intFormId, _newForm);
                           },
                         ),
-                        FlatButton(
-                          child: Text(
-                            'Choose Date',
-                          ),
-                          onPressed: () => _selectDate(context),
-                        ),
                         Container(
                           width: double.infinity,
                           child: Padding(
@@ -456,7 +417,7 @@ class _InstallFormState extends State<InstallForm> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => ChecklistForm()),
+                                      builder: (context) => FinalSubmission()),
                                 );
                                 // Validate returns true if the form is valid, or false
                                 // otherwise.

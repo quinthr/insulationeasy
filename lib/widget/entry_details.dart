@@ -167,17 +167,6 @@ class EntryDetails extends StatelessWidget {
                                 textAlign: TextAlign.left,
                               ),
                             ),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                'Date: ${snapshot.data[0].workSiteEvaluatedDate}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
                           ],
                         ),
                         SizedBox(
@@ -190,35 +179,6 @@ class EntryDetails extends StatelessWidget {
                               margin: EdgeInsets.symmetric(horizontal: 10),
                               child: Text(
                                 'Builder\'s Confirmation: ${snapshot.data[0].builderConfirmation}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                                textAlign: TextAlign.left,
-                              ),
-                            ),
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                'Date: ${snapshot.data[0].builderConfirmationDate}',
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 16,
-                                ),
-                                textAlign: TextAlign.right,
-                              ),
-                            ),
-                          ],
-                        ),
-                        SizedBox(
-                          height: 10.0,
-                        ),
-                        Row(
-                          children: [
-                            Container(
-                              margin: EdgeInsets.symmetric(horizontal: 10),
-                              child: Text(
-                                'Assessor: ${snapshot.data[0].assessorName}',
                                 style: TextStyle(
                                   fontWeight: FontWeight.bold,
                                   fontSize: 16,
